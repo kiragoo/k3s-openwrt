@@ -33,8 +33,8 @@ jobs:
           test -f build/k3s_1.30.11+k3s1_x86_64.opk
           echo "✓ Package file exists"
           
-          # Extract and verify package contents
-          cd build/k3s_1.30.11+k3s1_x86_64/pkg
+          # Navigate to the correct build directory
+          cd build/1.30.11+k3s1/x86_64/pkg
           
           # Check for required files
           test -f debian-binary && echo "✓ debian-binary exists"
