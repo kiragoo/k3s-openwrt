@@ -1,0 +1,52 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*.*.*'
+      - '[0-9]+.*'
+
+jobs:
+  release:
+    runs-on: ubuntu-22.04
+    permissions:
+      contents: write
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y curl tar gzip make
+      
+      - name: Build all architectures
+        run: |
+          # Build for each architecture
+          for arch in x86_64 arm64 armhf aarch64_cortex-a72; do
+            echo "Building for $arch..."
+            make VERSION=1.30.11+k3s1 ARCH=$arch
+          done
+      
+      - name: List build artifacts
+        run: |
+          echo "Build artifacts:"
+          find build/ -name "*.opk" -type f
+      
+      - name: Create Release
+        uses: softprops/action-gh-release@v1
+        with:
+          files: build/*.opk
+          generate_release_notes: true
+          draft: false
+          prerelease: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      
+      - name: Upload release artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: release-packages
+          path: build/*.opk
+          retention-days: 90

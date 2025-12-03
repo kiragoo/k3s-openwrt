@@ -1,0 +1,76 @@
+name: Build and Test
+
+on:
+  push:
+    branches:
+      - '**'
+    tags-ignore:
+      - '**'
+  pull_request:
+    branches:
+      - '**'
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-22.04
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y curl tar gzip make
+      
+      - name: Build k3s package
+        run: |
+          make VERSION=1.30.11+k3s1 ARCH=x86_64
+      
+      - name: Verify package structure
+        run: |
+          # Check if .opk file exists
+          test -f build/k3s_1.30.11+k3s1_x86_64.opk
+          echo "✓ Package file exists"
+          
+          # Extract and verify package contents
+          cd build/k3s_1.30.11+k3s1_x86_64/pkg
+          
+          # Check for required files
+          test -f debian-binary && echo "✓ debian-binary exists"
+          test -f control.tar.gz && echo "✓ control.tar.gz exists"
+          test -f data.tar.gz && echo "✓ data.tar.gz exists"
+          
+          # Verify control file content
+          tar -xzf control.tar.gz
+          grep -q "Package: k3s" control && echo "✓ Package name correct"
+          grep -q "Version: 1.30.11+k3s1" control && echo "✓ Version correct"
+          grep -q "Architecture: x86_64" control && echo "✓ Architecture correct"
+          grep -q "containerd" control && echo "✓ containerd dependency present"
+          
+          # Verify data archive contents
+          tar -tzf data.tar.gz | grep -q "usr/bin/k3s" && echo "✓ k3s binary present"
+          tar -tzf data.tar.gz | grep -q "usr/bin/k3s-wrapper" && echo "✓ k3s-wrapper present"
+          tar -tzf data.tar.gz | grep -q "etc/init.d/k3s" && echo "✓ init script present"
+      
+      - name: Verify script syntax
+        run: |
+          # Check init script syntax
+          sh -n files/etc/init.d/k3s && echo "✓ Init script syntax valid"
+          
+          # Check wrapper script syntax
+          sh -n files/usr/bin/k3s-wrapper && echo "✓ Wrapper script syntax valid"
+      
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: k3s-openwrt-package
+          path: build/k3s_1.30.11+k3s1_x86_64.opk
+          retention-days: 30
+      
+      - name: Upload all build files
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-directory
+          path: build/
+          retention-days: 30

@@ -104,3 +104,34 @@ The build process will:
 ```bash
 make clean
 ```
+
+## CI/CD
+
+This project uses GitHub Actions for automated building and releasing.
+
+### Automated Builds
+
+Every push to any branch triggers:
+- Package building for x86_64
+- Structure verification
+- Script syntax checking
+- Artifacts upload (available for 30 days)
+
+View build status: [Actions](../../actions)
+
+### Automated Releases
+
+Push a tag to trigger multi-architecture builds and GitHub Release:
+```bash
+git tag v1.30.11-1
+git push origin v1.30.11-1
+```
+
+This will:
+- Build packages for all architectures (x86_64, arm64, armhf, aarch64_cortex-a72)
+- Create a GitHub Release
+- Upload all .opk files as release assets
+
+Download releases: [Releases](../../releases)
+
+For detailed CI/CD documentation, see [GITHUB_ACTIONS_GUIDE.md](GITHUB_ACTIONS_GUIDE.md)
