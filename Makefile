@@ -12,8 +12,8 @@ Package: k3s
 Version: ${VERSION}-${PVERSION}
 Architecture: $(ARCH)
 Maintainer: Johannes 'fish' Ziemke
-Depends: iptables iptables-mod-extra kmod-ipt-extra iptables-mod-extra kmod-br-netfilter ca-certificates
-Description: The Docker Engine packages for OpenWrt
+Depends: iptables, iptables-mod-extra, kmod-ipt-extra, kmod-br-netfilter, ca-certificates, containerd
+Description: Lightweight Kubernetes (k3s) for OpenWrt
 endef
 export CONTROL
 
