@@ -32,12 +32,12 @@ jobs:
       - name: List build artifacts
         run: |
           echo "Build artifacts:"
-          find build/ -name "*.opk" -type f
+          find build/ -name "*.ipk" -type f
       
       - name: Create Release
         uses: softprops/action-gh-release@v1
         with:
-          files: build/*.opk
+          files: build/*.ipk
           generate_release_notes: true
           draft: false
           prerelease: false
@@ -48,5 +48,5 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: release-packages
-          path: build/*.opk
+          path: build/*.ipk
           retention-days: 90

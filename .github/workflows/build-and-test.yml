@@ -29,8 +29,8 @@ jobs:
       
       - name: Verify package structure
         run: |
-          # Check if .opk file exists
-          test -f build/k3s_1.30.11+k3s1_x86_64.opk
+          # Check if .ipk file exists (Makefile generates .ipk, not .opk)
+          test -f build/k3s_1.30.11+k3s1_x86_64.ipk
           echo "✓ Package file exists"
           
           # Navigate to the correct build directory
@@ -44,7 +44,7 @@ jobs:
           # Verify control file content
           tar -xzf control.tar.gz
           grep -q "Package: k3s" control && echo "✓ Package name correct"
-          grep -q "Version: 1.30.11+k3s1" control && echo "✓ Version correct"
+          grep -q "Version: 1.30.11+k3s1-1" control && echo "✓ Version correct"
           grep -q "Architecture: x86_64" control && echo "✓ Architecture correct"
           grep -q "containerd" control && echo "✓ containerd dependency present"
           
@@ -65,7 +65,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: k3s-openwrt-package
-          path: build/k3s_1.30.11+k3s1_x86_64.opk
+          path: build/k3s_1.30.11+k3s1_x86_64.ipk
           retention-days: 30
       
       - name: Upload all build files
