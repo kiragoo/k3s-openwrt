@@ -5,13 +5,13 @@ suffix   := $(subst -x86_64,,-$(ARCH))
 
 FILES = $(shell find files/ -type f)
 DIR   = build/$(VERSION)/$(ARCH)
-OUT   = build/k3s_$(VERSION)_$(ARCH).opk
+OUT   = build/k3s_$(VERSION)_$(ARCH).ipk
 
 define CONTROL
 Package: k3s
 Version: ${VERSION}-${PVERSION}
 Architecture: $(ARCH)
-Maintainer: Johannes 'fish' Ziemke
+Maintainer: kiragoo 
 Depends: iptables, iptables-mod-extra, kmod-ipt-extra, kmod-br-netfilter, ca-certificates, containerd
 Description: Lightweight Kubernetes (k3s) for OpenWrt
 endef
